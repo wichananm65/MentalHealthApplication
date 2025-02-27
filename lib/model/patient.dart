@@ -4,9 +4,10 @@ class Patient {
   int age;
   String result;
 
-  Patient(
-      {this.keyID,
-      required this.name,
-      required this.age,
-      required this.result});
+  Patient({
+    this.keyID,
+    required this.name,
+    required this.age,
+    required this.result,
+  });
 }

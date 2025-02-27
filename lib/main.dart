@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mental_health/assessment.dart';
+import 'package:mental_health/edit.dart';
 import 'package:mental_health/model/patient.dart';
 import 'package:mental_health/provider/patient_provider.dart';
 import 'package:provider/provider.dart';
@@ -14,37 +15,84 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) {
-            return Patientprovider();
-          })
-        ],
-        child: MaterialApp(
-          title: 'แอปพลิเคชันสุขภาพจิต',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: const MyHomePage(title: 'แอปพลิเคชันสุขภาพจิต'),
-        ));
+      providers: [
+        ChangeNotifierProvider(create: (context) => Patientprovider()),
+      ],
+      child: MaterialApp(
+        title: 'แอปพลิเคชันสุขภาพจิต',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const MyHomePage(title: 'แอปพลิเคชันสุขภาพจิต'),
+      ),
+    );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  TextEditingController searchController = TextEditingController();
+  String query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<Patientprovider>(context, listen: false).initData();
+    });
+    searchController.addListener(() {
+      setState(() {
+        query = searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 163, 51, 183),
-        title: Text(widget.title),
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        title: Text(
+          widget.title,
+          style: TextStyle(color: Colors.white),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'ค้นหา',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+              ),
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () async {
@@ -52,46 +100,84 @@ class _MyHomePageState extends State<MyHomePage> {
                 context,
                 MaterialPageRoute(builder: (context) => const Assessment()),
               );
-
               if (result == true) {
                 setState(() {});
               }
             },
-            icon: const Icon(Icons.assignment),
-            color: Colors.white,
-            iconSize: 30,
+            icon: const Icon(
+              Icons.assignment,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
-      body: Consumer(
-        builder: (context, Patientprovider provider, Widget? child) {
-          int itemCount = provider.patients.length;
+      body: Consumer<Patientprovider>(
+        builder: (context, provider, child) {
+          List<Patient> filteredPatients = provider.patients
+              .where((patient) =>
+                  patient.name.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+
+          int itemCount = filteredPatients.length;
           if (itemCount == 0) {
             return Center(
               child: Text(
-                "ไม่มีผู้ป่วย",
+                "ไม่มีผู้ป่วยที่ตรงกับคำค้น",
                 style: TextStyle(fontSize: 20),
               ),
             );
           } else {
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // แสดง 2 คอลัมน์
+                crossAxisSpacing: 8.0, // ช่องว่างระหว่างคอลัมน์
+                mainAxisSpacing: 8.0, // ช่องว่างระหว่างแถว
+                childAspectRatio: 1.0, // ทำให้ Card เป็นทรงสี่เหลี่ยมจัตุรัส
+              ),
               itemCount: itemCount,
               itemBuilder: (context, int index) {
-                Patient data = provider.patients[index];
+                Patient data = filteredPatients[index];
                 return Card(
-                    elevation: 5,
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 30,
-                        child: FittedBox(
-                          child: Text(data.keyID.toString()),
+                  elevation: 8, // เพิ่มเงาให้ดูน่าสนใจ
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // มุมโค้งมน
+                  ),
+                  margin: const EdgeInsets.all(8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12), // เพิ่มพื้นที่ภายใน Card
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.deepPurple,
+                          child: FittedBox(
+                            child: Text(
+                              data.keyID.toString(),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
-                      ),
-                      title: Text(data.name),
-                      subtitle: Text(data.result.toString()),
-                    ));
+                        SizedBox(height: 8), // เพิ่มระยะห่าง
+                        Text(
+                          "${data.name} อายุ ${data.age} ปี",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
+                        SizedBox(height: 4), // เพิ่มระยะห่าง
+                        Text(
+                          data.result.toString(),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: const Color.fromARGB(255, 148, 21, 245)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             );
           }

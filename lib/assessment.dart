@@ -15,12 +15,14 @@ class _AssessmentState extends State<Assessment> {
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final ageController = TextEditingController();
+  late int newKeyID;
   List<int?> answers = List<int?>.filled(questions.length, null);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 163, 51, 183),
         title: const Text("แบบประเมิน",
             style: TextStyle(color: Colors.white, fontSize: 20)),
@@ -99,8 +101,14 @@ class _AssessmentState extends State<Assessment> {
                     String result = getResultInterpretation(score);
                     final provider =
                         Provider.of<Patientprovider>(context, listen: false);
+                    if (provider.patients.isEmpty) {
+                      newKeyID = 1;
+                    } else {
+                      newKeyID = provider.patients.length + 1;
+                    }
                     provider.addPatient(
                       Patient(
+                        keyID: newKeyID,
                         name: nameController.text,
                         age: int.parse(ageController.text),
                         result: result,
@@ -119,7 +127,7 @@ class _AssessmentState extends State<Assessment> {
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop(true);
-                              Navigator.of(context).pop(true); // ปิดหน้าประเมิน
+                              Navigator.of(context).pop(true);
                             },
                             child: const Text("ตกลง"),
                           ),
