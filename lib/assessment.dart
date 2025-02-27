@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:mental_health/model/patient.dart';
+import 'package:mental_health/provider/patientProvider.dart';
 import 'question.dart';
 
 class Assessment extends StatefulWidget {
@@ -34,7 +37,12 @@ class _AssessmentState extends State<Assessment> {
                   labelText: 'ชื่อ-นามสกุล',
                 ),
                 controller: nameController,
-                validator: (value) => value!.isEmpty ? 'กรุณากรอกชื่อ' : null,
+                validator: (String? value) {
+                  if (value!.isEmpty) {
+                    return "กรุณาป้อน ชื่อ และนามสกุล";
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -44,7 +52,11 @@ class _AssessmentState extends State<Assessment> {
                 ),
                 keyboardType: TextInputType.number,
                 controller: ageController,
-                validator: (value) => value!.isEmpty ? 'กรุณากรอกอายุ' : null,
+                validator: (value) {
+                  if (value!.isEmpty) return 'กรุณากรอกอายุ';
+                  if (int.tryParse(value) == null) return 'กรุณากรอกตัวเลข';
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               ...questions.asMap().entries.map((entry) {
@@ -58,9 +70,7 @@ class _AssessmentState extends State<Assessment> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("${index + 1}: $question",
-                            style: const TextStyle(
-                              fontSize: 18,
-                            )),
+                            style: const TextStyle(fontSize: 18)),
                         Column(
                           children: options.entries.map((option) {
                             return RadioListTile<int>(
@@ -87,19 +97,31 @@ class _AssessmentState extends State<Assessment> {
                       !answers.contains(null)) {
                     int score = calculateScore(answers);
                     String result = getResultInterpretation(score);
+
+                    // เพิ่มข้อมูลลงใน Provider
+                    final provider =
+                        Provider.of<Patientprovider>(context, listen: false);
+                    provider.addPatient(
+                      Patient(
+                        name: nameController.text,
+                        age: int.parse(ageController.text),
+                        result: result,
+                      ),
+                    );
+
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text("ผลการประเมิน"),
                         content: Text(
                           "คะแนนของคุณ: $score\n\n$result",
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pop(true);
+                              Navigator.of(context).pop(true); // ปิดหน้าประเมิน
                             },
                             child: const Text("ตกลง"),
                           ),
