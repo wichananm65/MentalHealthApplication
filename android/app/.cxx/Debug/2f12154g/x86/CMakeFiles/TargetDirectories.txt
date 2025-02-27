@@ -1,0 +1,2 @@
+E:/works/mobile-app/mental_health/android/app/.cxx/Debug/2f12154g/x86/CMakeFiles/edit_cache.dir
+E:/works/mobile-app/mental_health/android/app/.cxx/Debug/2f12154g/x86/CMakeFiles/rebuild_cache.dir
