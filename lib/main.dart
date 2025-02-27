@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mental_health/assessment.dart';
 import 'package:mental_health/model/patient.dart';
-import 'package:mental_health/provider/patientProvider.dart';
+import 'package:mental_health/provider/patient_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -86,11 +86,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       leading: CircleAvatar(
                         radius: 30,
                         child: FittedBox(
-                          child: Text(data.age.toString()),
+                          child: Text(data.keyID.toString()),
                         ),
                       ),
                       title: Text(data.name),
-                      subtitle: Text(data.name.toString()),
+                      subtitle: Text(data.result.toString()),
                     ));
               },
             );

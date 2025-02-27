@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mental_health/model/patient.dart';
-import 'package:mental_health/provider/patientProvider.dart';
+import 'package:mental_health/provider/patient_provider.dart';
 import 'question.dart';
 
 class Assessment extends StatefulWidget {
@@ -97,8 +97,6 @@ class _AssessmentState extends State<Assessment> {
                       !answers.contains(null)) {
                     int score = calculateScore(answers);
                     String result = getResultInterpretation(score);
-
-                    // เพิ่มข้อมูลลงใน Provider
                     final provider =
                         Provider.of<Patientprovider>(context, listen: false);
                     provider.addPatient(
