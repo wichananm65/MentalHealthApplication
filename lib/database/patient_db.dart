@@ -3,7 +3,6 @@ import 'package:mental_health/model/patient.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sembast/sembast.dart';
 
 class PatientDb {
   final String dbName;
@@ -41,7 +40,7 @@ class PatientDb {
     for (var record in snapshot) {
       patientList.add(
         Patient(
-          keyID: record.key as int,
+          keyID: record.key,
           name: record["name"] as String,
           age: record["age"] as int,
           result: record["result"] as String,

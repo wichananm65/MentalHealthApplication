@@ -129,55 +129,65 @@ class _MyHomePageState extends State<MyHomePage> {
           } else {
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // แสดง 2 คอลัมน์
-                crossAxisSpacing: 8.0, // ช่องว่างระหว่างคอลัมน์
-                mainAxisSpacing: 8.0, // ช่องว่างระหว่างแถว
-                childAspectRatio: 1.0, // ทำให้ Card เป็นทรงสี่เหลี่ยมจัตุรัส
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 1.0,
               ),
               itemCount: itemCount,
               itemBuilder: (context, int index) {
                 Patient data = filteredPatients[index];
-                return Card(
-                  elevation: 8, // เพิ่มเงาให้ดูน่าสนใจ
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // มุมโค้งมน
-                  ),
-                  margin: const EdgeInsets.all(8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12), // เพิ่มพื้นที่ภายใน Card
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.deepPurple,
-                          child: FittedBox(
-                            child: Text(
-                              data.keyID.toString(),
-                              style: TextStyle(color: Colors.white),
+                return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Edit(
+                                    patientToEdit: data,
+                                  )));
+                    },
+                    child: Card(
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      margin: const EdgeInsets.all(8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.deepPurple,
+                              child: FittedBox(
+                                child: Text(
+                                  data.keyID.toString(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                             ),
-                          ),
+                            SizedBox(height: 8),
+                            Text(
+                              "${data.name} อายุ ${data.age} ปี",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              data.result.toString(),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color:
+                                      const Color.fromARGB(255, 148, 21, 245)),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 8), // เพิ่มระยะห่าง
-                        Text(
-                          "${data.name} อายุ ${data.age} ปี",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        SizedBox(height: 4), // เพิ่มระยะห่าง
-                        Text(
-                          data.result.toString(),
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: const Color.fromARGB(255, 148, 21, 245)),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                      ),
+                    ));
               },
             );
           }

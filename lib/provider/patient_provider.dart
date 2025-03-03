@@ -32,7 +32,11 @@ class Patientprovider with ChangeNotifier {
   void updatePatient(Patient updatedPatient) async {
     var db = PatientDb(dbName: "patient.db");
     await db.updateData(updatedPatient);
-    patients = await db.loadAllData();
-    notifyListeners();
+
+    int index = patients.indexWhere((p) => p.keyID == updatedPatient.keyID);
+    if (index != -1) {
+      patients[index] = updatedPatient;
+      notifyListeners();
+    }
   }
 }
